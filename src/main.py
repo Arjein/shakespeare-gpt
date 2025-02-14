@@ -12,6 +12,7 @@ parser = argparse.ArgumentParser(description="Bigram Language Model Training & G
 parser.add_argument("--mode", type=str, required=True, choices=["train", "generate"], help="Mode: train or generate")
 parser.add_argument("--model_path", type=str, help="Path to the model file")
 parser.add_argument("--max_iters", type=int, default=5000, help="Number of training iterations")
+parser.add_argument("--max_new_tokens", type=int, default=1000, help="Number of characters to be generated")
 
 
 args = parser.parse_args()
@@ -49,7 +50,7 @@ def train(model_path, max_iters, learning_rate, device=device):
         train_model(model=model, max_iters=max_iters, learning_rate=learning_rate, device=device, train_data=train_data, val_data=val_data, path=args.model_path)
 
 # Generate Function
-def generate(model_path, device=device):
+def generate(model_path, max_new_tokens, device=device):
     if not os.path.exists(model_path):
         print("Model not found. Train it first using '--mode train'.")
         return
@@ -60,10 +61,10 @@ def generate(model_path, device=device):
     model = model.to(device)
 
     context = torch.zeros((1, 1), dtype=torch.long, device=device)
-    print(decode(model.generate(context, max_new_tokens=500)[0].tolist()))
+    print(decode(model.generate(context, max_new_tokens=max_new_tokens)[0].tolist()))
 
 # Execute Based on User Choice
 if args.mode == "train":
     train(args.model_path, args.max_iters, learning_rate)
 elif args.mode == "generate":
-    generate(f'../models/{args.model_path}.pth')
+    generate(f'../models/{args.model_path}.pth', max_new_tokens=args.max_new_tokens)

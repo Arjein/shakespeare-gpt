@@ -7,7 +7,6 @@ torch.manual_seed(1337)
 
 BLOCK_SIZE = 256
 device = 'mps' if torch.mps.is_available() else 'cpu'
-print(f'Device : {device}')
 n_embd = 384
 dropout = 0.2
 
